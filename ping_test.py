@@ -35,14 +35,12 @@ def getip(file):
     iplist = []
 
     for each in iptxt:
-        each = each.strip()
+        each = each.strip() # 去除\n\r等换行符
         if each.rfind('/') != -1:
-            for ip in ipaddress.IPv4Network(each):
+            for ip in ipaddress.IPv4Network(each): # 展开带掩码的ip地址
                 iplist.append(str(ip))
         else:
             iplist.append(each)
-
-        # iptxt = map(lambda s: s.strip(), iptxt) #删除换行符
 
     current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     print('-'*30, current_time, '-'*30,)
@@ -79,20 +77,23 @@ def ping(ip):
             delay = -1
             loss = 100
 
-        print("Ping {}\t result #{}:\t delay={}, loss={}".format(ip, i, delay, loss))  
+        print("Ping {}\t result #{}:\t delay={}\t loss={}".format(ip, i, delay, loss))  
         time.sleep(interval)
 
 
 ip_list = getip('ipip.txt') # 在此输入ip文件的名字，文件需与py放到同一目录
 # ip_list = ["10.0.3.251", "10.0.2.76", "10.0.5.251"] #临时测试可单独定义列表
 
-threads = []
-for ip in ip_list:
-    thread = threading.Thread(target=ping, args=(ip,))
-    threads.append(thread)
 
-for thread in threads:
-    thread.start()
+if __name__ == "__main__":
 
-for thread in threads:
-    thread.join()
+    threads = []
+    for ip in ip_list:
+        thread = threading.Thread(target=ping, args=(ip,))
+        threads.append(thread)
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
